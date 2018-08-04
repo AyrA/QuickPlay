@@ -30,7 +30,7 @@ it's closed again and the first one will play the media file you selected.
 - Double clicking the file name will open the directory of that file
 - Keyboard controls
 
-##Libraries
+## Libraries
 
 QuickPlay utilizes the [VideoLAN libVLC](https://www.videolan.org/vlc/libvlc.html),
 which is an independent 3rd party component.
