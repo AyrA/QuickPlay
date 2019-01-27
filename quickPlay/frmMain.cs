@@ -153,23 +153,37 @@ namespace quickPlay
 
         private void tPlayerUpdate_Tick(object sender, EventArgs e)
         {
+            //Media length in seconds
             var Length = (int)(Player.Length / 1000d);
-            var Position = (int)Math.Floor(Player.Position);
-            if (pbTime.Maximum != Length && Length > 0)
+            //Force position into length
+            var Position = Math.Max(0, Math.Min(Length, (int)Math.Floor(Player.Position)));
+            //Don't adjust length and position if they're not calculated yet
+            if (Length > 0 && Position > 0)
             {
-                if (pbTime.Value > Length)
+                //Set length if it doesn't matches
+                if (pbTime.Maximum != Length)
                 {
-                    pbTime.Value = pbTime.Minimum;
+                    //Reduce current displayed time if it's outside of bounds
+                    if (pbTime.Value > Length)
+                    {
+                        pbTime.Value = pbTime.Minimum;
+                    }
+                    pbTime.Maximum = Length;
                 }
-                pbTime.Maximum = Length;
-            }
-            if (pbTime.Value != Position && Position > 0)
-            {
-                pbTime.Value = Math.Min(Position, Length);
-                pbTime.ForeColor = ColFromPerc(Position * 100d / Length);
-                pbTime.Refresh();
-                pbTime.CreateGraphics().DrawString(new TimeSpan(0, 0, 0, 0, Position * 1000).ToString(), Fixedsys, new SolidBrush(Color.Green), new Point(pbTime.Width / 2 - 40, 2));
-                TaskbarProgress.SetValue(Handle, Position, Length);
+                if (pbTime.Value != Position)
+                {
+                    pbTime.Value = Position;
+                    pbTime.ForeColor = ColFromPerc(Position * 100d / Length);
+                    pbTime.Refresh();
+                    using (var G = pbTime.CreateGraphics())
+                    {
+                        using (var B = new SolidBrush(Color.Green))
+                        {
+                            G.DrawString(new TimeSpan(0, 0, 0, 0, Position * 1000).ToString(), Fixedsys, B, new Point(pbTime.Width / 2 - 40, 2));
+                        }
+                    }
+                    TaskbarProgress.SetValue(Handle, Position, Length);
+                }
             }
         }
 
