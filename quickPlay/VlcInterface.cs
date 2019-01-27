@@ -26,6 +26,9 @@ namespace quickPlay
         public event PlayerHandler OnStopped = delegate { };
         public event PlayerHandler OnEnded = delegate { };
 
+        /// <summary>
+        /// Extracts the VLC library
+        /// </summary>
         public static void ExtractLib()
         {
             if (!Directory.Exists(_LibDir))
@@ -37,6 +40,9 @@ namespace quickPlay
             }
         }
 
+        /// <summary>
+        /// Kills the library directory
+        /// </summary>
         public static void KillLib()
         {
             if (Directory.Exists(_LibDir))
@@ -45,6 +51,9 @@ namespace quickPlay
             }
         }
 
+        /// <summary>
+        /// Static initializer
+        /// </summary>
         static VlcInterface()
         {
             using (var P = Process.GetCurrentProcess())
@@ -53,9 +62,15 @@ namespace quickPlay
             }
         }
 
+        /// <summary>
+        /// Gets the media file name
+        /// </summary>
         public string FileName
         { get; private set; }
 
+        /// <summary>
+        /// Gets or sets the current media position as seconds
+        /// </summary>
         public float Position
         {
             get
@@ -68,6 +83,9 @@ namespace quickPlay
             }
         }
 
+        /// <summary>
+        /// Gets or sets the current media position as a percentage
+        /// </summary>
         public float PositionPercentage
         {
             get
@@ -80,6 +98,9 @@ namespace quickPlay
             }
         }
 
+        /// <summary>
+        /// Gets the media length in Milliseconds
+        /// </summary>
         public long Length
         {
             get
@@ -88,6 +109,9 @@ namespace quickPlay
             }
         }
 
+        /// <summary>
+        /// Gets if the media is paused
+        /// </summary>
         public bool Paused
         {
             get
@@ -96,6 +120,9 @@ namespace quickPlay
             }
         }
 
+        /// <summary>
+        /// Gets or sets the current volume
+        /// </summary>
         public int Volume
         {
             get
@@ -108,6 +135,10 @@ namespace quickPlay
             }
         }
 
+        /// <summary>
+        /// Initializes a new VLC player
+        /// </summary>
+        /// <param name="FileName">Media file</param>
         public VlcInterface(string FileName)
         {
             this.FileName = FileName;
@@ -121,13 +152,7 @@ namespace quickPlay
 
         private void InitPlayer()
         {
-            //Disposing the old player hangs for some reason
-            /*
-            if (Player != null)
-            {
-                Player.Dispose();
-            }
-            //*/
+            //The player is architecture specific
             Player = new VlcMediaPlayer(new DirectoryInfo(Path.Combine(_LibDir, IntPtr.Size == 4 ? "x86" : "x64")));
             Player.Stopped += delegate
             {
@@ -154,6 +179,9 @@ namespace quickPlay
             }
         }
 
+        /// <summary>
+        /// Stops the current media
+        /// </summary>
         public void Stop()
         {
             if (Player.State != MediaStates.Stopped)
@@ -162,6 +190,9 @@ namespace quickPlay
             }
         }
 
+        /// <summary>
+        /// Plays the current media
+        /// </summary>
         public void Play()
         {
             if (Player.State == MediaStates.Ended)
@@ -179,6 +210,9 @@ namespace quickPlay
 
         }
 
+        /// <summary>
+        /// Pauses/Unpauses the current media
+        /// </summary>
         public void Pause()
         {
             if (Player.State == MediaStates.Paused)
@@ -191,10 +225,13 @@ namespace quickPlay
             }
         }
 
-        public void Seek(float Pos)
+        /// <summary>
+        /// Seeks the current media relative to the current position
+        /// </summary>
+        /// <param name="Offset">Position offset in seconds</param>
+        public void Seek(float Offset)
         {
-            Position += Pos;
+            Position += Offset;
         }
-
     }
 }
